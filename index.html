@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Tamizhi (தமிழி / Tamil-Brahmi) Script Translator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Brahmi&family=Noto+Sans+Tamil&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1f1a17;
+      --clay: #8b4f32;
+      --clay-dark: #563226;
+      --sand: #d8c49a;
+      --parchment: #f4eddb;
+      --stone: #393733;
+      --gold: #c7a86a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      max-width: none;
+      margin: 0;
+      padding: 42px 16px 70px;
+      color: var(--ink);
+      font-family: Georgia, "Noto Serif Tamil", "Noto Sans Tamil", system-ui, sans-serif;
+      background:
+        repeating-linear-gradient(0deg, rgba(86,50,38,.025) 0, rgba(86,50,38,.025) 1px, transparent 1px, transparent 5px),
+        radial-gradient(circle at 12% 18%, rgba(229,139,50,.34), transparent 20rem),
+        radial-gradient(circle at 88% 78%, rgba(22,139,139,.28), transparent 22rem),
+        linear-gradient(135deg, #fff2ca, #f7f0dc 52%, #d8efe6);
+      background-attachment: fixed;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      background: url("bg-temple.jpg") center / cover no-repeat;
+      opacity: .75;
+      pointer-events: none;
+    }
+
+    .museum-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 820px;
+      margin: auto;
+    }
+
+    .title-panel {
+      position: relative;
+      text-align: center;
+      padding: 28px 22px 24px;
+      border: 1px solid rgba(86,50,38,.24);
+      border-radius: 18px 18px 6px 6px;
+      background: rgba(255,251,238,.78);
+      box-shadow: 0 18px 45px rgba(86,50,38,.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .title-panel::before,
+    .title-panel::after {
+      content: "𑀁";
+      position: absolute;
+      top: 20px;
+      color: var(--clay);
+      font-family: "Noto Sans Brahmi", serif;
+      font-size: 1.8rem;
+    }
+
+    .title-panel::before { left: 24px; }
+    .title-panel::after { right: 24px; }
+
+    h2 {
+      margin: 0;
+      color: var(--clay-dark);
+      font-size: clamp(1.55rem, 4vw, 2.25rem);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: #786852;
+      font-family: system-ui, sans-serif;
+      font-size: .78rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .translator-panel {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid rgba(86,50,38,.18);
+      border-radius: 14px;
+      background: rgba(255,255,255,.42);
+    }
+
+    label {
+      display: block;
+      margin: 0 0 8px 2px;
+      color: var(--clay-dark);
+      font-family: system-ui, sans-serif;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 16px 18px;
+      border: 1px solid rgba(86,50,38,.28);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(244,237,219,.60);
+      opacity: .60;
+      color: var(--ink);
+      font-family: "Noto Sans Tamil", Georgia, system-ui, sans-serif;
+      font-size: 1.35rem;
+      box-shadow: inset 0 2px 8px rgba(86,50,38,.07);
+      transition: opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    input:focus {
+      border-color: var(--clay);
+      opacity: 1;
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 3px rgba(199,168,106,.22), inset 0 2px 8px rgba(86,50,38,.07);
+    }
+
+    .tamil-preview {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      background: rgba(244,237,219,.78);
+      color: #514738;
+      font-size: 1.15rem;
+      font-family: "Noto Sans Tamil", Georgia, serif;
+    }
+
+    .stone-tablet {
+      position: relative;
+      min-height: 160px;
+      margin-top: 16px;
+      padding: 42px 32px 34px;
+      border: 1px solid #625e55;
+      border-radius: 12px 12px 28px 28px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.035), transparent 38%),
+        repeating-linear-gradient(92deg, transparent 0, transparent 18px, rgba(255,255,255,.018) 19px),
+        var(--stone);
+      color: #ead9b4;
+      font-family: "Noto Sans Brahmi", "Noto Sans Tamil", serif;
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      line-height: 1.7;
+      letter-spacing: .08em;
+      word-wrap: break-word;
+      text-align: center;
+      text-shadow: 1px 2px 0 #1d1b19, -1px -1px 0 #676258;
+      box-shadow:
+        inset 0 0 28px rgba(0,0,0,.32),
+        0 16px 32px rgba(56,43,31,.17);
+    }
+
+    .stone-tablet::before {
+      content: "𑁇  TAMIL-BRAHMI INSCRIPTION  𑁇";
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 90%;
+      color: #a99e82;
+      font-family: Georgia, serif;
+      font-size: .66rem;
+      letter-spacing: .16em;
+      text-shadow: none;
+    }
+
+    .stone-tablet::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(234,217,180,.08);
+      border-radius: 7px 7px 22px 22px;
+      pointer-events: none;
+    }
+
+    .example-row,
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .example-chip,
+    .action-button {
+      flex: 1 1 120px;
+      padding: 10px 14px;
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background:
+        linear-gradient(rgba(255,250,235,.92), rgba(255,250,235,.92)) padding-box,
+        linear-gradient(90deg, #e58b32, #168b8b, #c95d76) border-box;
+      color: var(--clay-dark);
+      font-family: system-ui, sans-serif;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .example-chip:hover,
+    .action-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 18px rgba(80,75,56,.16);
+    }
+
+    .action-button {
+      background: linear-gradient(135deg, #168b8b, #276b91);
+      color: white;
+    }
+
+    .action-button.secondary {
+      background: linear-gradient(135deg, #ffd78a, #efa0a9);
+      color: #713d2c;
+    }
+
+    @media (max-width: 620px) {
+      body {
+        min-height: 100dvh;
+        padding:
+          max(16px, env(safe-area-inset-top))
+          max(10px, env(safe-area-inset-right))
+          max(30px, env(safe-area-inset-bottom))
+          max(10px, env(safe-area-inset-left));
+      }
+
+      body::before { inset: 5px; }
+
+      .museum-shell { width: 100%; }
+
+      .title-panel {
+        padding: 20px 12px 18px;
+        border-radius: 14px 14px 5px 5px;
+      }
+
+      .title-panel::before,
+      .title-panel::after { display: none; }
+
+      h2 { font-size: clamp(1.35rem, 7vw, 1.75rem); }
+
+      .subtitle {
+        font-size: .68rem;
+        line-height: 1.5;
+        letter-spacing: .1em;
+      }
+
+      .translator-panel {
+        margin-top: 12px;
+        padding: 10px;
+        border-radius: 10px;
+      }
+
+      label {
+        line-height: 1.4;
+        font-size: .72rem;
+      }
+
+      input {
+        min-height: 52px;
+        padding: 13px 14px;
+        font-size: 16px;
+      }
+
+      .tamil-preview {
+        padding: 10px 12px;
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+      }
+
+      .stone-tablet {
+        min-height: 145px;
+        margin-top: 12px;
+        padding: 44px 12px 24px;
+        border-radius: 9px 9px 20px 20px;
+        font-size: clamp(1.45rem, 8vw, 2.15rem);
+        line-height: 1.55;
+        letter-spacing: .04em;
+        overflow-wrap: anywhere;
+      }
+
+      .stone-tablet::before {
+        top: 11px;
+        font-size: .54rem;
+        letter-spacing: .08em;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 380px) {
+      h2 { font-size: 1.25rem; }
+      .subtitle { letter-spacing: .06em; }
+      .stone-tablet {
+        padding-inline: 8px;
+        font-size: 1.35rem;
+      }
+      .stone-tablet::before {
+        max-width: 95%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="museum-shell">
+    <header class="title-panel">
+      <h2>தமிழி Epigraphic Translator</h2>
+      <p class="subtitle">Tamil & Tanglish → Ancient Tamil-Brahmi</p>
+    </header>
+
+    <section class="translator-panel">
+      <label for="modernInput">Enter Tamil or Tanglish inscription text</label>
+      <input type="text" id="modernInput" value="thamizh" oninput="transliterateToBrahmi()" placeholder="தமிழ் or thamizh / vanakkam / nandri" />
+
+      <div class="tamil-preview">
+        <strong>Modern Tamil:</strong> <span id="tamilOutput">தமிழ்</span>
+      </div>
+
+      <div class="stone-tablet" id="brahmiOutput">𑀢𑀫𑀺𑀵𑁆</div>
+
+      <div class="action-row">
+        <button type="button" class="action-button" onclick="copyBrahmi()">Copy Brahmi</button>
+        <button type="button" class="action-button secondary" onclick="clearTranslator()">Clear</button>
+      </div>
+
+      <div class="example-row" aria-label="Example words">
+        <button type="button" class="example-chip" onclick="setExample('vanakkam')">வணக்கம்</button>
+        <button type="button" class="example-chip" onclick="setExample('thamizh')">தமிழ்</button>
+        <button type="button" class="example-chip" onclick="setExample('nanri')">நன்றி</button>
+        <button type="button" class="example-chip" onclick="setExample('meendum varuga')">மீண்டும் வருக</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const VOWELS = {
+      "aa": ["ஆ", "ா"],
+      "ai": ["ஐ", "ை"], "au": ["ஔ", "ௌ"], "ou": ["ஔ", "ௌ"],
+      "A": ["ஆ", "ா"],
+      "ii": ["ஈ", "ீ"], "ee": ["ஈ", "ீ"], "I": ["ஈ", "ீ"],
+      "uu": ["ஊ", "ூ"], "oo": ["ஊ", "ூ"], "U": ["ஊ", "ூ"],
+      "ae": ["ஏ", "ே"], "ea": ["ஏ", "ே"], "E": ["ஏ", "ே"],
+      "oa": ["ஓ", "ோ"], "O": ["ஓ", "ோ"],
+      "a": ["அ", ""], "i": ["இ", "ி"], "u": ["உ", "ு"],
+      "e": ["எ", "ெ"], "o": ["ஒ", "ொ"]
+    };
+
+    const CONSONANTS = {
+      "ng": "ங", "nj": "ஞ", "gn": "ஞ",
+      "th": "த", "dh": "த", "kh": "க", "gh": "க",
+      "ph": "ப", "bh": "ப", "ch": "ச", "sh": "ச", "zh": "ழ",
+      "k": "க", "g": "க", "s": "ச", "c": "ச", "j": "ஜ",
+      "h": "ஹ", "z": "ழ", "x": "க", "f": "ப", "q": "க",
+      "t": "ட", "d": "ட", "N": "ண", "n": "ந",
+      "p": "ப", "b": "ப", "m": "ம", "y": "ய", "r": "ர",
+      "l": "ல", "v": "வ", "w": "வ", "L": "ள", "R": "ற"
+    };
+
+    const LATIN_FALLBACK = {
+      a:"அ", b:"ப", c:"ச", d:"ட", e:"எ", f:"ப", g:"க", h:"ஹ",
+      i:"இ", j:"ஜ", k:"க", l:"ல", m:"ம", n:"ந", o:"ஒ", p:"ப",
+      q:"க", r:"ர", s:"ச", t:"ட", u:"உ", v:"வ", w:"வ",
+      x:"க", y:"ய", z:"ழ"
+    };
+
+    const VOWEL_KEYS = Object.keys(VOWELS).sort((a, b) => b.length - a.length);
+    const CONS_KEYS = Object.keys(CONSONANTS).sort((a, b) => b.length - a.length);
+
+    function englishToTamil(text) {
+      let result = "";
+      let i = 0;
+
+      while (i < text.length) {
+        let matchedCons = CONS_KEYS.find(k => text.startsWith(k, i));
+        if (!matchedCons) {
+          const slice2 = text.slice(i, i + 2).toLowerCase();
+          if (CONSONANTS[slice2]) matchedCons = text.slice(i, i + 2);
+        }
+
+        if (matchedCons) {
+          let tamilCons = CONSONANTS[matchedCons] || CONSONANTS[matchedCons.toLowerCase()];
+          if (matchedCons === "n" && i > 0 && /[a-zA-Z]/.test(text[i - 1])) {
+            const prevChar = text[i - 1].toLowerCase();
+            if (prevChar !== "n" && prevChar !== "t" && prevChar !== "d") {
+              tamilCons = "ன";
+            }
+          }
+          i += matchedCons.length;
+
+          let matchedVowel = VOWEL_KEYS.find(k => text.startsWith(k, i));
+          if (!matchedVowel) {
+            const v2 = text.slice(i, i + 2).toLowerCase();
+            const v1 = text[i] ? text[i].toLowerCase() : "";
+            if (VOWELS[v2]) matchedVowel = text.slice(i, i + 2);
+            else if (VOWELS[v1]) matchedVowel = text[i];
+          }
+
+          if (matchedVowel) {
+            const vowelSign = (VOWELS[matchedVowel] || VOWELS[matchedVowel.toLowerCase()])[1];
+            result += tamilCons + vowelSign;
+            i += matchedVowel.length;
+          } else {
+            result += tamilCons + "்";
+          }
+          continue;
+        }
+
+        let matchedVowel = VOWEL_KEYS.find(k => text.startsWith(k, i));
+        if (!matchedVowel) {
+          const v2 = text.slice(i, i + 2).toLowerCase();
+          const v1 = text[i] ? text[i].toLowerCase() : "";
+          if (VOWELS[v2]) matchedVowel = text.slice(i, i + 2);
+          else if (VOWELS[v1]) matchedVowel = text[i];
+        }
+
+        if (matchedVowel) {
+          const indepVowel = (VOWELS[matchedVowel] || VOWELS[matchedVowel.toLowerCase()])[0];
+          result += indepVowel;
+          i += matchedVowel.length;
+          continue;
+        }
+
+        result += LATIN_FALLBACK[text[i].toLowerCase()] || text[i];
+        i++;
+      }
+
+      return result;
+    }
+
+    const TAMIL_TO_BRAHMI = {
+      "அ": "𑀅", "ஆ": "𑀆", "இ": "𑀇", "ஈ": "𑀈", "உ": "𑀉", "ஊ": "𑀊",
+      "எ": "𑀏", "ஏ": "𑀏", "ஐ": "𑀐", "ஒ": "𑀑", "ஓ": "𑀑", "ஔ": "𑀒",
+      "க": "𑀓", "ங": "𑀗", "ச": "𑀘", "ஞ": "𑀜", "ட": "𑀝", "ண": "𑀡",
+      "த": "𑀢", "ந": "𑀦", "ப": "𑀧", "ம": "𑀫", "ய": "𑀬", "ர": "𑀭",
+      "ல": "𑀮", "வ": "𑀯", "ழ": "𑀵", "ள": "𑀴", "ற": "𑀶", "ன": "𑀷",
+      "ா": "𑀸", "ி": "𑀺", "ீ": "𑀻", "ு": "𑀼", "ூ": "𑀽",
+      "ெ": "𑁂", "ே": "𑁂", "ை": "𑁃", "ொ": "𑁄", "ோ": "𑁄", "ௌ": "𑁅", "்": "𑁆",
+      "ஃ": "𑀂", "ஜ": "𑀚", "ஷ": "𑀰", "ஸ": "𑀲", "ஹ": "𑀳",
+      "0": "𑁦", "1": "𑁧", "2": "𑁨", "3": "𑁩", "4": "𑁪",
+      "5": "𑁫", "6": "𑁬", "7": "𑁭", "8": "𑁮", "9": "𑁯"
+    };
+
+    function hasTamil(text) {
+      return /[\u0B80-\u0BFF]/.test(text);
+    }
+
+    function transliterateToBrahmi() {
+      const input = document.getElementById("modernInput").value;
+      const modernTamil = hasTamil(input) ? input : englishToTamil(input);
+
+      document.getElementById("tamilOutput").textContent = modernTamil;
+      const brahmi = Array.from(modernTamil)
+        .map(ch => TAMIL_TO_BRAHMI[ch] || ch)
+        .join("");
+      document.getElementById("brahmiOutput").textContent = brahmi;
+    }
+
+    function setExample(example) {
+      document.getElementById("modernInput").value = example;
+      transliterateToBrahmi();
+    }
+
+    function copyBrahmi() {
+      const brahmiText = document.getElementById("brahmiOutput").textContent;
+      navigator.clipboard.writeText(brahmiText).then(() => {
+        alert("Brahmi text copied to clipboard: " + brahmiText);
+      });
+    }
+
+    function clearTranslator() {
+      document.getElementById("modernInput").value = "";
+      document.getElementById("tamilOutput").textContent = "தமிழ்";
+      document.getElementById("brahmiOutput").textContent = "𑀢𑀫𑀺𑀵𑁆";
+    }
+
+    function shareTranslation() {
+      const brahmiText = document.getElementById("brahmiOutput").textContent;
+      const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(brahmiText);
+      window.open(url, "_blank");
+    }
+
+    transliterateToBrahmi();
+  </script>
+</body>
+</html>
